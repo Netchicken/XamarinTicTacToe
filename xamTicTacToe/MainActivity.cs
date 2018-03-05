@@ -3,15 +3,18 @@ using Android.App;
 using Android.Widget;
 using Android.OS;
 using Android.Views;
+using System.Collections.Generic;
+using Android.Icu.Text;
 
 namespace xamTicTacToe
 {
     [Activity(Label = "xamTicTacToe", MainLauncher = true)]
     public class MainActivity : Activity
     {
-        private ImageView[,] tiles;
+
         private ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9;
         private int Currentplayer = 1;
+        private ImageView[] Tiles;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,16 +33,24 @@ namespace xamTicTacToe
             iv8 = FindViewById<ImageView>(Resource.Id.iv8);
             iv9 = FindViewById<ImageView>(Resource.Id.iv9);
 
-            iv1.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv2.Touch += (sender, args) => { Image_Touch(sender, args); }; ;
-            iv3.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv4.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv5.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv6.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv7.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv8.Touch += (sender, args) => { Image_Touch(sender, args); };
-            iv9.Touch += (sender, args) => { Image_Touch(sender, args); };
-            init();
+            Tiles = new ImageView[] { iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9 };
+
+            //add a touch event to each imageview
+            foreach (var tile in Tiles)
+            {
+                tile.Touch += (sender, args) => { Image_Touch(sender, args); };
+            }
+
+            //iv1.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv2.Touch += (sender, args) => { Image_Touch(sender, args); }; ;
+            //iv3.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv4.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv5.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv6.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv7.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv8.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //iv9.Touch += (sender, args) => { Image_Touch(sender, args); };
+            //    init();
         }
 
 
@@ -66,7 +77,6 @@ namespace xamTicTacToe
                         Image.SetImageResource(Resource.Drawable.xtile);
                         Image.Tag = "Cross";
                         break;
-
                 }
 
                 Check();
@@ -77,14 +87,30 @@ namespace xamTicTacToe
         }
 
 
-
         private void init()
         {
-            tiles = new ImageView[,] { { iv1, iv2, iv3 }, { iv4, iv5, iv6 }, { iv7, iv8, iv9 } };
+
+
         }
 
         private void Check()
         {//horozontal
+
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    int j = i + 1;
+            //    int k = j + 1;
+            //    if (Tiles[i].Tag.ToString() == Tiles[j].Tag.ToString() && Tiles[j].Tag.ToString() == Tiles[k].Tag.ToString() && Tiles[k].Tag.ToString() != "none")
+            //    {
+            //        string Text = "Player " + Currentplayer + " won";
+            //        Toast.MakeText(this, Text, ToastLength.Long).Show();
+            //        Reset();
+            //        return;
+            //    }
+            //}
+
+
+
             if (iv1.Tag.ToString() == iv2.Tag.ToString() && iv2.Tag.ToString() == iv3.Tag.ToString() && iv3.Tag.ToString() != "none" ||
                 iv4.Tag.ToString() == iv5.Tag.ToString() && iv5.Tag.ToString() == iv6.Tag.ToString() && iv6.Tag.ToString() != "none" ||
                 iv7.Tag.ToString() == iv8.Tag.ToString() && iv8.Tag.ToString() == iv9.Tag.ToString() && iv9.Tag.ToString() != "none"
@@ -92,6 +118,9 @@ namespace xamTicTacToe
             {
                 string Text = "Player " + Currentplayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
+                Reset();
+                return;
+
             }
             //vertical
             if (iv1.Tag.ToString() == iv4.Tag.ToString() && iv4.Tag.ToString() == iv7.Tag.ToString() && iv7.Tag.ToString() != "none" ||
@@ -101,6 +130,8 @@ namespace xamTicTacToe
             {
                 string Text = "Player " + Currentplayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
+                Reset();
+                return;
             }
             //Diagonal
             if (iv1.Tag.ToString() == iv5.Tag.ToString() && iv5.Tag.ToString() == iv9.Tag.ToString() && iv9.Tag.ToString() != "none" ||
@@ -109,9 +140,33 @@ namespace xamTicTacToe
             {
                 string Text = "Player " + Currentplayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
+                Reset();
+                return;
             }
         }
 
+
+        private void Reset()
+        {
+
+            foreach (var iv in Tiles)
+            {
+                iv.Tag = "none";
+                iv.SetImageResource(Resource.Drawable.blanktile);
+                iv.Enabled = false;
+            }
+
+            Currentplayer = 1;
+
+            Toast.MakeText(this, "New Game!", ToastLength.Long).Show();
+
+
+            foreach (var iv in Tiles)
+            {
+               
+                iv.Enabled = true;
+            }
+        }
 
 
 
