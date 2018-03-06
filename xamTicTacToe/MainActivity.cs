@@ -97,12 +97,6 @@ namespace xamTicTacToe
         }
 
 
-        private void init()
-        {
-
-
-        }
-
         private void Check()
         {//horozontal
 
@@ -138,6 +132,29 @@ namespace xamTicTacToe
                 EndGame();
                 return;
             }
+            //Draw
+            Draw();
+        }
+
+        private void Draw()
+        {
+            //DRAW count how many blanks there are if none then its a draw
+            int countNone = 0;
+            foreach (var iv in Tiles)
+            {
+                if (iv.Tag.ToString() != "none")
+                {
+                    //this code is ugly, sorry .....
+                    countNone++;
+                }
+
+                if (countNone == 9)
+                {
+                    string Text = "Its a Draw! You both lost";
+                    Toast.MakeText(this, Text, ToastLength.Long).Show();
+                    EndGame();
+                }
+            }
         }
 
         private void EnableTiles()
@@ -158,7 +175,8 @@ namespace xamTicTacToe
             }
 
             Currentplayer = 1;
-            Toast.MakeText(this, "New Game!", ToastLength.Long).Show();
+            Toast.MakeText(this, "Press the button to play a new game", ToastLength.Long).Show();
+            btnGo.Text = "Click for New Game";
         }
 
 
