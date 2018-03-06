@@ -8,7 +8,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
+        android:id="@+id/txtTitle" />
     <GridLayout
         android:minWidth="25px"
         android:minHeight="25px"
@@ -32,8 +32,8 @@
             android:tag="none" />
         <ImageView
             android:src="@drawable/blanktile"
-            android:id="@+id/iv4" 
-          android:tag="none"/>
+            android:id="@+id/iv4"
+            android:tag="none" />
         <ImageView
             android:src="@drawable/blanktile"
             android:id="@+id/iv5"
@@ -55,4 +55,9 @@
             android:id="@+id/iv9"
             android:tag="none" />
     </GridLayout>
+    <Button
+        android:text="Start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnGo" />
 </LinearLayout>

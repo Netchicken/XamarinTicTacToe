@@ -69,6 +69,9 @@ namespace xamTicTacToe
 			// aapt resource value: 0x7f050001
 			public const int Grid = 2131034113;
 			
+			// aapt resource value: 0x7f05000b
+			public const int btnGo = 2131034123;
+			
 			// aapt resource value: 0x7f050002
 			public const int iv1 = 2131034114;
 			
@@ -97,7 +100,7 @@ namespace xamTicTacToe
 			public const int iv9 = 2131034122;
 			
 			// aapt resource value: 0x7f050000
-			public const int textView1 = 2131034112;
+			public const int txtTitle = 2131034112;
 			
 			static Id()
 			{
