@@ -4,18 +4,21 @@ using Android.Widget;
 using Android.OS;
 using Android.Views;
 using System.Collections.Generic;
+using Android.Content;
 using Android.Icu.Text;
+using Android.Util;
 
 namespace xamTicTacToe
 {
-    [Activity(Label = "xamTicTacToe", MainLauncher = true)]
+    [Activity(Label = "Tic Tac Toe", MainLauncher = true)]
     public class MainActivity : Activity
     {
+        User ThisPlayer = new User();
         private Button btnGo;
         private ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9;
-        private int Currentplayer = 1;
-        private ImageView[] Tiles;
-
+        private ImageView[,] Tiles;
+        private TextView TitleText;
+        private String LogTag;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -32,50 +35,154 @@ namespace xamTicTacToe
             iv7 = FindViewById<ImageView>(Resource.Id.iv7);
             iv8 = FindViewById<ImageView>(Resource.Id.iv8);
             iv9 = FindViewById<ImageView>(Resource.Id.iv9);
-
-            Tiles = new ImageView[] { iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9 };
+            TitleText = FindViewById<TextView>(Resource.Id.txtTitle);
+            Tiles = new ImageView[,] { { iv1, iv2, iv3 }, { iv4, iv5, iv6 }, { iv7, iv8, iv9 } };
 
 
             btnGo.Click += btnGo_Click;
-
+            TitleText.Text = "Click the Button to Start";
             //add a touch event to each imageview
             foreach (var tile in Tiles)
             {
-                tile.Enabled = false; //don't let the came start till the button has been clicked
-
+                tile.Enabled = false; //don't let the game start till the button has been clicked
+                tile.Tag = "none";
+                tile.SetImageResource(Resource.Drawable.blanktile);
                 tile.Touch += (sender, args) => { Image_Touch(sender, args); };
             }
 
-            //iv1.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv2.Touch += (sender, args) => { Image_Touch(sender, args); }; ;
-            //iv3.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv4.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv5.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv6.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv7.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv8.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //iv9.Touch += (sender, args) => { Image_Touch(sender, args); };
-            //    init();
         }
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            EnableTiles();
+            Log.Info(LogTag, "Button click");
+
+            //reset on button click
+            if (btnGo.Text == "Playing ....")
+            {
+                EndGame();
+                return;
+            }
+
+            ThisPlayer.CurrentPlayer = 1;
+            foreach (var iv in Tiles)
+            {
+                iv.Enabled = true;
+            }
+            btnGo.Text = "Playing ....";
+
+
+
         }
 
-
-        private EventHandler Image_Touch(object sender, View.TouchEventArgs args)
+        /// <summary>
+        /// The touch event for the tiles (similar to click event)
+        /// </summary>
+        private void Image_Touch(object sender, View.TouchEventArgs touchEventArgs)
         {
-            var Image = (ImageView)sender;
+            Log.Info(LogTag, "Image click");
+            //& MotionEventArgs.Mask THERE ARE MULTIPLE EVENTS TRIGGERED WHEN TOUCHED, NEED TO CATCH THEM   
+            //https://developer.xamarin.com/guides/android/application_fundamentals/touch/android_touch_walkthrough/
 
-            string tag = (string)Image.Tag;
+            switch (touchEventArgs.Event.Action)
+            {
+                case MotionEventActions.Down:
+                    Log.Info(LogTag, "MotionEventActions.Down");
+
+                    ThisPlayer.CurrentPlayer = 1;
+                    //get the image clicked
+                    var Image = (ImageView)sender;
+
+                    //get the tag - none, Blank, Circle
+                    // string tag = (string)Image.Tag;
+                    TileClicked(Image);
+
+                    //  TwoHumanPlayersGameplay(tag, Image);  
+                    break;
+                case MotionEventActions.Up:
+                case MotionEventActions.Move:
+                    //message = "Touch Ends";
+                    break;
+
+                    //   default:
+                    //    message = string.Empty;
+                    //       break;
+            }
+
+        }
+
+        private void TileClicked(ImageView Clickedtile)
+        {
+            TitleText.Text = "Player = " + ThisPlayer.CurrentPlayer.ToString();
+
+            if (ThisPlayer.CurrentPlayer == 1) //Human
+            {
+                Clickedtile.SetImageResource(Resource.Drawable.otile);
+                Clickedtile.Tag = "Circle";
+                ThisPlayer.WinnerCheck(Tiles);
+            }
+            //human didn't win so Robot gets a chance
+            if (ThisPlayer.Winner == false)
+            {
+                ThisPlayer.SwitchPlayerTurn(); //Robots turn;
+
+                if (ThisPlayer.CurrentPlayer == 2) //extra check its a Robot - it cheats
+                {
+                    Tiles = Robot.RobotMoveHorozontalAndVertical(Tiles);
+                    ThisPlayer.WinnerCheck(Tiles);
+                }
+            }
+
+            if (ThisPlayer.Winner == true)
+            {
+                //show if there is a winner
+                string wintext = String.Format("Player {0} Wins!", ThisPlayer.CurrentPlayer);
+                Log.Info(LogTag, wintext);
+                Toast.MakeText(this, wintext, ToastLength.Long).Show();
+                EndGame();
+
+            }
 
 
 
-            //if there is a blank tile
+
+        }
+
+        private void ProcessHumanMove()
+        {
+            ThisPlayer.WinnerCheck(Tiles); //sets Winner to true if won
+
+            //if (ThisPlayer.Winner == true)
+            //{
+            //    //show if there is a winner
+            //    string wintext = String.Format("The Human {0} Wins!", ThisPlayer.CurrentPlayer);
+            //    Toast.MakeText(this, wintext, ToastLength.Long).Show();
+            //    EndGame();
+            //    return true;
+            //}
+            //return false;
+        }
+
+        private void ProcessRobotMove()
+        {
+            Tiles = Robot.RobotMoveHorozontalAndVertical(Tiles);
+
+            ThisPlayer.WinnerCheck(Tiles);  //sets Winner to true if won
+
+            //if (ThisPlayer.Winner == true)
+            //{
+            //    //show if there is a winner
+            //    string wintext = String.Format("The Computer {0} Wins!", ThisPlayer.CurrentPlayer);
+            //    Toast.MakeText(this, wintext, ToastLength.Long).Show();
+            //    EndGame();
+            //}
+        }
+
+        private void TwoHumanPlayersGameplay(string tag, ImageView Image)
+        {
+            //if there is a none tile
             if ((tag == "none"))
             {
-                switch (Currentplayer)
+                switch (ThisPlayer.CurrentPlayer)
                 {
                     //put in the tile for the player
                     case 1:
@@ -90,13 +197,10 @@ namespace xamTicTacToe
                 }
 
                 Check();
-                Player();
-                return null;
+                ThisPlayer.SwitchPlayerTurn();
+                return;
             }
-            return null;
         }
-
-
         private void Check()
         {//horozontal
 
@@ -105,7 +209,7 @@ namespace xamTicTacToe
                 iv7.Tag.ToString() == iv8.Tag.ToString() && iv8.Tag.ToString() == iv9.Tag.ToString() && iv9.Tag.ToString() != "none"
                 )
             {
-                string Text = "Player " + Currentplayer + " won";
+                string Text = "Player " + ThisPlayer.CurrentPlayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
                 EndGame();
                 return;
@@ -117,7 +221,7 @@ namespace xamTicTacToe
                 iv3.Tag.ToString() == iv6.Tag.ToString() && iv6.Tag.ToString() == iv9.Tag.ToString() && iv9.Tag.ToString() != "none"
                 )
             {
-                string Text = "Player " + Currentplayer + " won";
+                string Text = "Player " + ThisPlayer.CurrentPlayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
                 EndGame();
                 return;
@@ -127,7 +231,7 @@ namespace xamTicTacToe
                 iv3.Tag.ToString() == iv5.Tag.ToString() && iv5.Tag.ToString() == iv7.Tag.ToString() && iv7.Tag.ToString() != "none"
                 )
             {
-                string Text = "Player " + Currentplayer + " won";
+                string Text = "Player " + ThisPlayer.CurrentPlayer + " won";
                 Toast.MakeText(this, Text, ToastLength.Long).Show();
                 EndGame();
                 return;
@@ -138,7 +242,7 @@ namespace xamTicTacToe
 
         private void Draw()
         {
-            //DRAW count how many blanks there are if none then its a draw
+            //DRAW count how many nones there are if none then its a draw
             int countNone = 0;
             foreach (var iv in Tiles)
             {
@@ -157,13 +261,7 @@ namespace xamTicTacToe
             }
         }
 
-        private void EnableTiles()
-        {
-            foreach (var iv in Tiles)
-            {
-                iv.Enabled = true;
-            }
-        }
+
 
         private void EndGame()
         {
@@ -174,26 +272,9 @@ namespace xamTicTacToe
                 iv.Enabled = false;
             }
 
-            Currentplayer = 1;
+            ThisPlayer.CurrentPlayer = 1;
             Toast.MakeText(this, "Press the button to play a new game", ToastLength.Long).Show();
             btnGo.Text = "Click for New Game";
-        }
-
-
-
-        private void Player()
-        {
-            //create a swap on the click to see who is playing
-            if (Currentplayer == 1)
-            {
-                Currentplayer = 2;
-                //      this.Text = "Player 2";
-            }
-            else if (Currentplayer == 2)
-            {
-                Currentplayer = 1;
-                //     this.Text = "Player 1";
-            }
         }
 
     }
