@@ -8,10 +8,10 @@ using xamTicTacToe;
 
 namespace TicTacToe
 {
-    class GameLogicForRobot
+    static class GameLogicForRobot
     {
 
-        internal ImageView[,] GrabOppositeCorner(ImageView[,] tiles)
+        public static ImageView[,] GrabOppositeCorner(ImageView[,] tiles)
         {
             //check the center first....DON'T TAKE THE CENTER, ITS EASILY BEATEN
 

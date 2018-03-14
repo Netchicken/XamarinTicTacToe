@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
+using Android.Service.QuickSettings;
 using Android.Widget;
 using TicTacToe;
 using xamTicTacToe;
@@ -14,16 +15,16 @@ namespace xamTicTacToe
 {
     public static class Robot
     {
-        private static GameLogicForRobot RobotLogic = new GameLogicForRobot();
+        // private static GameLogicForRobot RobotLogic = new GameLogicForRobot();
         public static int turncounter = 0;
 
         // private User player = new User();
-        //check what tiles are free
-        //pick the best tile 
-        //start with corners, and center
-        //check if user or computer has 2 in a row
-        //block user two in a row
-        //add tile to computer two in a row
+        //   check what tiles are free
+        //  pick the best tile 
+        //todo start with corners, and center
+        //todo check if user or computer has 2 in a row
+        //todo block user two in a row
+        //todo add tile to computer two in a row
 
         //user = circle
         //robot = cross
@@ -56,6 +57,20 @@ namespace xamTicTacToe
 
         public static ImageView[,] RobotMoveHorozontalAndVertical(ImageView[,] tiles)
         {
+            //Search for empty cross places first, Attack! not Defend
+            if (RobotImproved.HCrossSearch(tiles) != null)
+            {
+                return RobotImproved.HCrossSearch(tiles);
+            }
+            if (RobotImproved.VCrossSearch(tiles) != null)
+            {
+                return RobotImproved.VCrossSearch(tiles);
+            }
+            //if (RobotImproved.DCrossSearch(tiles) != null)
+            //{
+            //    return RobotImproved.DCrossSearch(tiles);
+            //}
+
             for (int i = 0; i < 3; i++) //row
             {
                 // tiles = RotateMatrix(tiles, 3);
@@ -71,13 +86,13 @@ namespace xamTicTacToe
 
                     switch (tiles[i, j].Tag.ToString())
                     {
-                        case "Circle":
+                        case "Circle": //Human
                             CountCircle++;
                             break;
                         case "none":
                             Countnone++;
                             break;
-                        case "Cross":
+                        case "Cross": //Robot
                             CountCross++;
                             break;
                     }
@@ -144,7 +159,8 @@ namespace xamTicTacToe
                         if (tiles[j, i].Tag.ToString() == "none")
                         {
                             tiles[j, i].Tag = string.Format("Cross");
-                            tiles[j, i].SetImageResource(Resource.Drawable.xtile);// = Resource1.x_tile;
+                            tiles[j, i].SetImageResource(Resource.Drawable.xtile);
+
                             return tiles;
                         } //what if its circle, none, circle?
                         if (tiles[j - 1, i].Tag.ToString() == "none")
@@ -437,7 +453,7 @@ namespace xamTicTacToe
         /// </summary>
         /// <param name="tiles"></param>
         /// <returns>ImageView coords</returns>
-        private static string Diagonalnone(ImageView[,] tiles)
+        public static string Diagonalnone(ImageView[,] tiles)
         {
 
             int none = DiagonalSearch(tiles);

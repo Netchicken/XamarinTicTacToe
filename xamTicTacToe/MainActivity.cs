@@ -14,6 +14,8 @@ namespace xamTicTacToe
     public class MainActivity : Activity
     {
         User ThisPlayer = new User();
+
+
         private Button btnGo;
         private ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9;
         private ImageView[,] Tiles;
@@ -102,10 +104,6 @@ namespace xamTicTacToe
                 case MotionEventActions.Move:
                     //message = "Touch Ends";
                     break;
-
-                    //   default:
-                    //    message = string.Empty;
-                    //       break;
             }
 
         }
@@ -123,12 +121,18 @@ namespace xamTicTacToe
             //human didn't win so Robot gets a chance
             if (ThisPlayer.Winner == false)
             {
-                ThisPlayer.SwitchPlayerTurn(); //Robots turn;
+
+                ThisPlayer.SwitchPlayerNames(); //Robots turn this doesn't actually do anything except below but it might be handy later.;
 
                 if (ThisPlayer.CurrentPlayer == 2) //extra check its a Robot - it cheats
                 {
                     Tiles = Robot.RobotMoveHorozontalAndVertical(Tiles);
-                    ThisPlayer.WinnerCheck(Tiles);
+
+                    if (Tiles != null)
+                    {
+                         ThisPlayer.WinnerCheck(Tiles);
+                    }
+                   
                 }
             }
 
@@ -177,6 +181,14 @@ namespace xamTicTacToe
             //}
         }
 
+        #region Single Player Code
+
+
+
+
+
+
+
         private void TwoHumanPlayersGameplay(string tag, ImageView Image)
         {
             //if there is a none tile
@@ -197,7 +209,7 @@ namespace xamTicTacToe
                 }
 
                 Check();
-                ThisPlayer.SwitchPlayerTurn();
+                ThisPlayer.SwitchPlayerNames();
                 return;
             }
         }
@@ -261,6 +273,7 @@ namespace xamTicTacToe
             }
         }
 
+        #endregion
 
 
         private void EndGame()

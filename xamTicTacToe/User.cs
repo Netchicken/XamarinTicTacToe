@@ -22,7 +22,7 @@ namespace xamTicTacToe
             TurnCounter = 0;
         }
 
-        public void SwitchPlayerTurn()
+        public void SwitchPlayerNames()
         {
             //create a swap on the click to see who is playing
             if (CurrentPlayer == 1)
@@ -55,11 +55,9 @@ namespace xamTicTacToe
             {
                 //horozontal and vertical
 
-                if (tiles[i, 0].Tag.ToString() != "none" && tiles[i, 0].Tag == tiles[i, 1].Tag &&
-                    tiles[i, 1].Tag == tiles[i, 2].Tag
+                if (tiles[i, 0].Tag.ToString() != "none" && tiles[i, 0].Tag == tiles[i, 1].Tag && tiles[i, 1].Tag == tiles[i, 2].Tag
                     ||
-                    tiles[0, i].Tag.ToString() != "none" && tiles[0, i].Tag == tiles[1, i].Tag &&
-                    tiles[1, i].Tag == tiles[2, i].Tag
+                    tiles[0, i].Tag.ToString() != "none" && tiles[0, i].Tag == tiles[1, i].Tag && tiles[1, i].Tag == tiles[2, i].Tag
                     )
                 {
                     Winner = true; //Winner = 1
